@@ -20,6 +20,7 @@ image = "*"
 dnutils = "*"
 appdirs = "*"
 Pmw = "*"
+pytest = "*"
 
 [requires]
 python_version = "3.6"
