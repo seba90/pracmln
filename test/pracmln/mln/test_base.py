@@ -17,7 +17,7 @@ def test_performance_parse_mln():
         with open(mln_file_path, "r") as mln_file:
 
             try:
-                parse_mln(mln_file.read())
+                parse_mln(mln_file.read(),logic='FuzzyLogic')
             except MLNParsingError as e:
                 print("Parsing Error in: " + mln_file_path)
                 print(e)
