@@ -6,6 +6,20 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
+tabulate = "*"
+pymongo = "*"
+numpy = "*"
+scipy = "*"
+logutils = "*"
+pyparsing = "*"
+psutil = "*"
+matplotlib = "*"
+networkx = "*"
+mpmath = "*"
+image = "*"
+dnutils = "*"
+appdirs = "*"
+Pmw = "*"
 
 [requires]
 python_version = "3.6"
