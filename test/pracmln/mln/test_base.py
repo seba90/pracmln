@@ -10,6 +10,7 @@ def test_performance_parse_mln():
     num_wrong_parsed_mlns = 0
 
     for mln_filename in listdir(TEST_MLNS_FOLDER_PATH):
+        # Remove if condition if you want to measure the performance of the parser
         if mln_filename == 'performance_test.mln': continue
 
         mln_file_path = path.join(TEST_MLNS_FOLDER_PATH, mln_filename)
