@@ -4,6 +4,7 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+pytest = "*"
 
 [packages]
 tabulate = "*"
@@ -20,7 +21,6 @@ image = "*"
 dnutils = "*"
 appdirs = "*"
 Pmw = "*"
-pytest = "*"
 
 [requires]
 python_version = "3.6"
