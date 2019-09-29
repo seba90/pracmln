@@ -2,6 +2,10 @@ language: python
 python:
 - '3.6.8'
 install:
-- pip install -r python3/requirements.txt
+- pip install pipenv
+- pipenv install --dev
 
-script: pytest
+script: pytest --cov-report term --cov=app/test/
+
+after_success:
+    - codecov
