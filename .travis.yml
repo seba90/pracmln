@@ -8,4 +8,4 @@ install:
 script: pytest --cov-report term --cov=pracmln/
 
 after_script:
-    - codecov
+    - codecov --required || (sleep 5 && codecov --required) || (sleep 5 && codecov --required) || (sleep 5 && codecov --required) || (sleep 5 && codecov --required)
