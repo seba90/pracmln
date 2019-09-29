@@ -1,7 +1,9 @@
 
 pracmln -- Markov logic networks in Python
 ==========================================
-
+<a href="https://travis-ci.org/seba90/pracmln/">
+    <img src="https://travis-ci.org/seba90/pracmln.svg?branch=master" alt="travis-ci"/>
+</a>
 <a href="http://codecov.io/github/seba90/pracmln?branch=master">
     <img src="http://codecov.io/github/seba90/pracmln/coverage.svg?branch=master" alt="Codecov" />
 </a>
