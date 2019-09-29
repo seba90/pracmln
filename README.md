@@ -2,6 +2,10 @@
 pracmln -- Markov logic networks in Python
 ==========================================
 
+<a href="http://codecov.io/github/seba90/pracmln?branch=master">
+    <img src="http://codecov.io/github/seba90/pracmln/coverage.svg?branch=master" alt="Codecov" />
+</a>
+  
 pracmln is a toolbox for statistical relational learning and reasoning and provides a pure python implementation of Markov logic networks. pracmln is a statistical relational learning and reasoning system that supports efficient learning and inference in relational domains. pracmln has started as a fork of the ProbCog toolbox and has been extended by latest developments in learning and reasoning by the Institute for Artificial Intelligence  at the University of Bremen, Germany.
 
 
