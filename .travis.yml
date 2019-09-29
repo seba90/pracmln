@@ -4,4 +4,7 @@ python:
 install:
 - pip install -r python3/requirements.txt
 
+before_script:
+  - cd python3/
+
 script: pytest
