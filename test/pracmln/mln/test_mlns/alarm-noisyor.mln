@@ -31,4 +31,4 @@ logx(0.6) !burglary(x) ^ neighborhood(x,Average)
 logx(0.3) burglary(x) ^ neighborhood(x,Good)
 logx(0.7) !burglary(x) ^ neighborhood(x,Good)
 
-alarm(x) <=> alarmFromBurglary(x) v EXIST y (alarmFromTornado(x,y)). // noisy or
+alarm(x) <=> alarmFromBurglary(x) v EXIST ?y (!alarmFromTornado(x,?y)).
