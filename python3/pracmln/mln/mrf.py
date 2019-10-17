@@ -194,7 +194,7 @@ class MRF(object):
                     if not type(f.weight) == list:
                         f.weight = float(f.weight)
                     else:
-                        f.weight[1] = map(float, f.weight[1])
+                        f.weight[1] = [float(x) for x in f.weight[1]]
                 except:
                     sys.stderr.write("Evaluation error while trying to compute '%s'\n" % w)
                     raise
