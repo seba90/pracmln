@@ -173,11 +173,11 @@ class MRF(object):
         '''
         materialize all formula weights.
         '''
-        max_weight = 0
         for f in self.formulas:
             if f.weight is not None and f.weight != HARD:
                 w = str(f.weight)
                 variables = re.findall(r'\$\w+', w)
+
                 for var in variables:
                     try:
                         w, numReplacements = re.subn(r'\%s' % var, self.mln.vars[var], w)
@@ -185,13 +185,19 @@ class MRF(object):
                         raise Exception("Error substituting variable references in '%s'\n" % w)
                     if numReplacements == 0:
                         raise Exception("Undefined variable(s) referenced in '%s'" % w)
+
                 w = re.sub(r'domSize\((.*?)\)', r'self.domsize("\1")', w)
+
                 try:
-                    f.weight = float(eval(w))
+                    f.weight = eval(w)
+
+                    if not type(f.weight) == list:
+                        f.weight = float(f.weight)
+                    else:
+                        f.weight[1] = map(float, f.weight[1])
                 except:
                     sys.stderr.write("Evaluation error while trying to compute '%s'\n" % w)
                     raise
-                max_weight = max(abs(f.weight), max_weight)
 
     def __getitem__(self, key):
         return self.evidence[self.gndatom(key).idx]
@@ -715,3 +721,10 @@ class MRF(object):
         f = open(filename, "w")
         G.write(f)
         f.close()
+
+
+def _get_max_weight(weight):
+    if not type(weight) == list:
+        return abs(weight)
+
+    return max(map(abs, weight[1]))
