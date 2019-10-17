@@ -4,4 +4,4 @@ size = {big, little}
 object_description(color,size)
 
 
-10 object_description(+?color,+?size)
+[[0,6],[1,3]] object_description(+?color,+?size)
