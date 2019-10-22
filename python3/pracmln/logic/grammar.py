@@ -173,22 +173,24 @@ class Grammar(object):
     
     def parse_literal(self, s):
         """
-        Parses a literal such as !p(A,B) or p(A,B)=False and returns a tuple 
+        Parses a literal such as !p(A,B) and returns a tuple
         where the first item is whether the literal is true, the second is the 
         predicate name and the third is a list of parameters, e.g. (False, "p", ["A", "B"])
         """
         # try regular MLN syntax
-        self.tree.reset()
-        try:
-            lit = self.literal.parseString(s)
-        except ParseException:
-            raise Exception('unable to parse string', s)
-        lit = self.tree.getConstraint()
-        return (not lit.negated, lit.predname, lit.args)
-#         m = re.match(r'(!?)(\w+)\((.*?)\)$', s)
-#         if m is not None:
-#             return (m.group(1) != "!", m.group(2), map(str.strip, m.group(3).split(",")))
-#         raise Exception("Could not parse literal '%s'" % s)
+        trimmed_literal = s.replace(" ", "")
+        true = True
+
+        if trimmed_literal.startswith('!'):
+            true = False
+            trimmed_literal = trimmed_literal[1:]
+
+        parenthesis_pos = trimmed_literal.find('(')
+        predicate_name = trimmed_literal[:parenthesis_pos]
+
+        args = trimmed_literal[parenthesis_pos+1:-1].split(',')
+
+        return (true, predicate_name, args)
 
     
 class StandardGrammar(Grammar):
