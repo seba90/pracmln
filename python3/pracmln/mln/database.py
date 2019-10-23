@@ -208,7 +208,8 @@ class Database(object):
         if truth in (True, False):
             truth = {True: 1, False: 0}[truth]
         truth = truth if true else 1 - truth
-        truth = eval('%.6f' % truth)
+        #truth = eval('%.6f' % truth)
+        truth = round(float(truth),6)
         
         pred = self.mln.predicate(predname)
         if pred is None:
