@@ -434,9 +434,9 @@ def dict_union(d1, d2):
     overridden by the respective items in d2.
     '''
     d_new = {}
-    for key, value in list(d1.items()):
+    for key, value in d1.items():
         d_new[key] = value
-    for key, value in list(d2.items()):
+    for key, value in d2.items():
         d_new[key] = value
     return d_new
 
