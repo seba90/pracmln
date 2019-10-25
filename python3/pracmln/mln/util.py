@@ -294,16 +294,13 @@ def mergedom(*domains):
     ''' 
     Returning a new domains dictionary that contains the elements of all the given domains
     '''
-    fullDomain = {}
+    full_domain = defaultdict(set)
+
     for domain in domains:
-        for domName, values in list(domain.items()):
-            if domName not in fullDomain:
-                fullDomain[domName] = set(values)
-            else:
-                fullDomain[domName].update(values)
-    for key, s in list(fullDomain.items()):
-        fullDomain[key] = list(s)
-    return fullDomain
+        for dom_name, values in list(domain.items()):
+            full_domain[dom_name].update(values)
+
+    return full_domain
 
 
 def colorize(message, format, color=False):

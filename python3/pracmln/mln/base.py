@@ -23,6 +23,8 @@
 # CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+from collections import defaultdict
+
 import pyparsing
 from dnutils import logs, ifnone, out
 
@@ -79,7 +81,7 @@ class MLN(object):
         self.logic = eval(logic_str)
         logger.debug('Creating MLN with %s syntax and %s semantics' % (grammar, logic))
         self._predicates = {} # maps from predicate name to the predicate instance
-        self.domains = {}    # maps from domain names to list of values
+        self.domains = defaultdict(set)    # maps from domain names to a set of values
         self._formulas = []   # list of MLNFormula instances
         self.domain_decls = []
         self.weights = []
@@ -154,7 +156,7 @@ class MLN(object):
         mln_.domain_decls = list(self.domain_decls)
         for i, f in self.iterformulas():
             mln_.formula(f.copy(mln=mln_), weight=self.weight(i), fixweight=self.fixweights[i], unique_templvars=self._unique_templvars[i])
-        mln_.domains = dict(self.domains)
+        mln_.domains = copy.copy(self.domains)
         mln_.vars = dict(self.vars)
         mln_._probreqs = list(self.probreqs)
         mln_.fuzzypreds = list(self.fuzzypreds)
@@ -221,9 +223,6 @@ class MLN(object):
             raise Exception('Contradictory predicate definitions: %s <--> %s' % (pred, predicate))
         else:
             self._predicates[predicate.name] = predicate
-            for dom in predicate.argdoms:
-                if dom not in self.domains:
-                    self.domains[dom] = []
         return self
 
     def formula(self, formula, weight=0., fixweight=False, unique_templvars=None):
@@ -350,10 +349,9 @@ class MLN(object):
         :param domain:    (string) the name of the domain the given value shall be added to.
         :param values:     (string) the values to be added.
         '''
-        if domain not in self.domains: self.domains[domain] = []
-        dom = self.domains[domain]
-        for value in values:
-            if value not in dom: dom.append(value)
+
+        self.domains[domain].update(values)
+
         return self
 
     def ground(self, db):
@@ -377,11 +375,10 @@ class MLN(object):
         '''
         Combines the existing domain (if any) with the given one.
         
-        :param domain: a dictionary with domain Name to list of string constants to add
+        :param domain: a dictionary with domain Name to set of string constants to add
         '''
-        for domname in domain: break
-        for value in domain[domname]:
-            self.constant(domname, value)
+        for domain_name, values in domain.items():
+            self.constant(domain_name, values)
 
     def learn(self, databases, method=BPLL, **params):
         '''
