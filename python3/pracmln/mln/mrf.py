@@ -290,13 +290,10 @@ class MRF(object):
         :param prednames:     a list of predicate names the cw assumption shall be applied to.
                               If empty, it is applied to all predicates.
         '''
-        if prednames:
-            for i, v in enumerate(self._evidence):
-                current_predicate_name = self.gndatom(i).predname
-
-                if current_predicate_name not in prednames:
-                    continue
-                if v is None: self._evidence[i] = 0
+        for i, v in enumerate(self._evidence):
+            if prednames and self.gndatom(i).predname not in prednames:
+                continue
+            if v is None: self._evidence[i] = 0
             
     def consistent(self, strict=False):
         '''
