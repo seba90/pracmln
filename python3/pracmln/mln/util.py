@@ -290,6 +290,10 @@ def gradGaussianZeroMean(x, sigma):
     return - (0.3990434423 * x * math.exp(-0.5 * x**2 / sigma**2) ) / (sigma**3)
 
 
+def mergedom_on_reference(domain_reference, new_domain):
+    for dom_name, values in new_domain.items():
+        domain_reference[dom_name].update(values)
+
 def mergedom(*domains):
     ''' 
     Returning a new domains dictionary that contains the elements of all the given domains
