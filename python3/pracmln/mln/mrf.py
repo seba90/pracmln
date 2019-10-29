@@ -427,13 +427,7 @@ class MRF(object):
         return d
 
     def evidence_dicti(self):
-        '''
-        Returns, from the current evidence list, a dictionary that maps ground atom indices to truth values
-        '''
-        d = {}
-        for idx, tv in enumerate(self._evidence):
-            d[idx] = tv
-        return d
+        return self._evidence
 
     def countworlds(self, withevidence=False):
         '''
