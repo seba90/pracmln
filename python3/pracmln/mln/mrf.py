@@ -302,7 +302,7 @@ class MRF(object):
         Raises an MRFValueException if the MRF is inconsistent.
         '''
         for variable in self.variables:
-            variable.consistent(self.evidence_dicti(), strict=strict)
+            variable.consistent(self._evidence, strict=strict)
 
     def gndatom(self, identifier, *args):
         '''
