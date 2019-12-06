@@ -23,6 +23,10 @@ dnutils = "*"
 appdirs = "*"
 Pmw = "*"
 codecov = "*"
+pip = "*"
+tensorflow-gpu = "*"
+tensorflow-probability = "*"
+sklearn = "*"
 
 [requires]
 python_version = "3.6"
