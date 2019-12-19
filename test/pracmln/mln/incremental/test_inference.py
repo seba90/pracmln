@@ -18,7 +18,7 @@ import pickle
 import numpy as np
 from python3.pracmln.mln.learning import BPLL
 from python3.pracmln.mln.util import mergedom, mergedom_on_reference
-from collections import defaultdict
+from collections import defaultdict, Counter
 
 GLOBAL_MRF = None
 PATH_TO_ENSEMBLE = path.join(path.dirname(__file__), 'ensemble')
@@ -325,32 +325,39 @@ def get_training_and_test_set_in_n_chunks(chunks=1):
 
     for shuffled_database in shuffled_databases.values():
         training_set_size = int(len(shuffled_database)*0.8)
-        training_set.extend(shuffled_database[:training_set_size])
+        splitted_database = list(split(shuffled_database[:training_set_size],chunks))
+
+        if len(training_set) > 0:
+            for x in range(len(training_set)):
+                training_set[x].extend(splitted_database[x])
+        else:
+            training_set.extend(splitted_database)
+        #training_set.extend(shuffled_database[:training_set_size])
         test_set.extend(shuffled_database[training_set_size:])
 
-    return shuffle(training_set, random_state=42), shuffle(test_set, random_state=42)
+    return [shuffle(x, random_state=42) for x in training_set], shuffle(test_set, random_state=42)
 
 def test_learn(k=1):
     training_set, _ = get_training_and_test_set_in_n_chunks(k)
-    dbs_splitted = split(training_set,k)
-    mln_file = open(path.join(path.dirname(__file__), 'nursery-template.mln'))
-    mln = parse_mln(mln_file.read())
-    mln_file.close()
-
-    mln_domains = mln.domains
-
-    #
-    print('Merging Domains ...')
-    for db in training_set:
-        mergedom_on_reference(mln_domains, db.domains)
-    print('Merged Domains')
-
-    print('Materializing MLN ...')
-    materialized_mln = mln.materialize()
-    print('Materialized')
 
     x = 0
-    for dbs in dbs_splitted:
+    for dbs in training_set:
+        mln_file = open(path.join(path.dirname(__file__), 'nursery-template.mln'))
+        mln = parse_mln(mln_file.read())
+        mln_file.close()
+
+        mln_domains = mln.domains
+
+        #
+        print('Merging Domains ...')
+        for db in dbs:
+            mergedom_on_reference(mln_domains, db.domains)
+        print('Merged Domains')
+
+        print('Materializing MLN ...')
+        materialized_mln = mln.materialize()
+        print('Materialized')
+
         total_time = 0
 
         start = time.time()
@@ -372,6 +379,73 @@ def test_learn(k=1):
 
     print("loop cycle time: %f, seconds count: %02d" % (1.0, total_time))
 
+def get_first_mode(a):
+    c = Counter(a)
+    mode_count = max(c.values())
+    mode = {key for key, count in c.items() if count == mode_count}
+
+    first_mode = next(x for x in a if x in mode)
+    return first_mode
+    #return mode
+
+
+def do_major_voting(result, truths):
+    correct = 0
+    wrong = 0
+
+    total = len(truths)
+    predictions = []
+
+    for x in range(total):
+        votes = []
+
+        if len(result) > 2:
+            for prediction in result:
+                votes.append(prediction[x])
+            vote = get_first_mode(votes)
+        else:
+            vote = result[0][x]
+
+        predictions.append(vote)
+
+        if truths[x] in vote:
+            correct += 1
+        else:
+            wrong += 1
+
+    print('Accuracy:', accuracy_score(truths, predictions))
+    print('F1 score:', f1_score(truths, predictions, average='micro'))
+    print('Recall:', recall_score(truths, predictions, average='micro'))
+    print('Precision:', precision_score(truths, predictions, average='micro'))
+    print('\n clasification report:\n', classification_report(truths, predictions))
+    print('\n confussion matrix:\n', confusion_matrix(truths, predictions))
+
+def test_eval_dump():
+    PICKLE_FILE_PATH = path.join(path.dirname(__file__), 'truth.p')
+    truth = pickle.load(open(PICKLE_FILE_PATH, "rb"))
+
+
+    PICKLE_FILE_PATH = path.join(path.dirname(__file__), 'predications.p')
+    result = pickle.load(open(PICKLE_FILE_PATH, "rb"))
+
+    do_major_voting(result, truth)
+
+
+def test_eval_incremental_dump():
+    PICKLE_FILE_PATH = path.join(path.dirname(__file__), 'truth.p')
+    truth = pickle.load(open(PICKLE_FILE_PATH, "rb"))
+
+
+    PICKLE_FILE_PATH = path.join(path.dirname(__file__), 'predications.p')
+    result = pickle.load(open(PICKLE_FILE_PATH, "rb"))
+
+
+
+    temp_result = []
+    for sub_result in result:
+        temp_result.append(sub_result)
+        do_major_voting(temp_result, truth)
+
 
 def test_eval():
     print('EVAL Regular MLN ...')
@@ -380,30 +454,22 @@ def test_eval():
 
     result = []
     truth = []
-    correct = 0
-    wrong = 0
 
-    for x in range(10):
+
+    for x in range(1):
         predications, truths = test_eval_inference(x)
         result.append(predications)
         truth = truths
 
-    total = len(truth)
 
-    for x in range(total):
-        votes = []
-        for prediction in result:
-            votes.append(prediction[x])
-        vote = statistics.mode(votes)
 
-        if vote == truth[x]:
-            correct += 1
-        else:
-            wrong += 1
+    PICKLE_FILE_PATH = path.join(path.dirname(__file__), 'truth.p')
+    pickle.dump(truth, open(PICKLE_FILE_PATH, "wb"))
 
-    print('Correct:{}  {}'.format(correct, correct / total))
-    print('Wrong:{}  {}'.format(wrong, wrong / total))
-    print('right/Wrong:{}'.format(correct / wrong))
+    PICKLE_FILE_PATH = path.join(path.dirname(__file__), 'predications.p')
+    pickle.dump(result, open(PICKLE_FILE_PATH, "wb"))
+
+    do_major_voting(result,truth)
 
     #elapsed = time.time() - start
     #print("loop cycle time: %f, seconds count: %02d" % (time.clock(), elapsed))
@@ -419,7 +485,7 @@ def test_eval():
 
 
 
-test_learn(1)
-#test_eval_inference()
-#test_transform_mlns_into_ensemble_mln()
+#test_learn(5)
 #test_eval()
+#test_eval_dump()
+test_eval_incremental_dump()
